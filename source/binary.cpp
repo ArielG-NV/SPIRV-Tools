@@ -336,19 +336,14 @@ spv_result_t Parser::parseInstruction() {
   // ExecutionMode), or for extended instructions that may have their
   // own operands depending on the selected extended instruction.
   _.expected_operands.clear();
-
   spvPushOperandTypes(opcode_desc->operands(), &_.expected_operands);
-
   while (_.word_index < inst_offset + inst_word_count) {
-    const uint16_t inst_word_index = uint16_t(_.word_index - inst_offset);
+    uint16_t inst_word_index_tmp = uint16_t(_.word_index - inst_offset);
     if (_.expected_operands.empty()) {
-      return diagnostic() << "Invalid instruction Op"
-                          << opcode_desc->name().data() << " starting at word "
-                          << inst_offset << ": expected no more operands after "
-                          << inst_word_index
-                          << " words, but stated word count is "
-                          << inst_word_count << ".";
+      _.expected_operands.push_back(
+            spv_operand_type_t::SPV_OPERAND_TYPE_VARIABLE_ID);
     }
+    const uint16_t inst_word_index = inst_word_index_tmp;
 
     spv_operand_type_t type =
         spvTakeFirstMatchableOperand(&_.expected_operands);
