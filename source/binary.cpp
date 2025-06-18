@@ -340,6 +340,10 @@ spv_result_t Parser::parseInstruction() {
   while (_.word_index < inst_offset + inst_word_count) {
     uint16_t inst_word_index_tmp = uint16_t(_.word_index - inst_offset);
     if (_.expected_operands.empty()) {
+      // Here we do something very hacky:
+      // If we have too many operands, assume the extra operands are all of type "SPV_OPERAND_TYPE_VARIABLE_ID".
+      // This is purely to allow outputting invalid spir-v, if a user needs to output a MEMORY_OPERAND then this must
+      // be explicitly tracked & added below.
       _.expected_operands.push_back(
             spv_operand_type_t::SPV_OPERAND_TYPE_VARIABLE_ID);
     }
